@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+	bootstrap="tests/bootstrap.php"
+	backupGlobals="false"
+	backupStaticAttributes="false"
+	colors="true"
+	convertDeprecationsToExceptions="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	processIsolation="false"
+	stopOnError="false"
+	stopOnFailure="false"
+	stopOnIncomplete="false"
+	stopOnSkipped="false"
+	stopOnRisky="false"
+	verbose="true"
+	beStrictAboutTestsThatDoNotTestAnything="false"
+	beStrictAboutOutputDuringTests="true"
+	beStrictAboutChangesToGlobalState="true"
+>
+	<!-- Test Suites -->
+	<testsuites>
+		<testsuite name="unit">
+			<directory suffix="Test.php">./tests/unit</directory>
+		</testsuite>
+
+		<testsuite name="integration">
+			<directory suffix="Test.php">./tests/integration</directory>
+		</testsuite>
+
+		<testsuite name="ajax">
+			<directory suffix="Test.php">./tests/ajax</directory>
+		</testsuite>
+
+		<testsuite name="rest-api">
+			<directory suffix="Test.php">./tests/rest-api</directory>
+		</testsuite>
+
+		<testsuite name="blocks">
+			<directory suffix="Test.php">./tests/blocks</directory>
+		</testsuite>
+
+		<testsuite name="generators">
+			<directory suffix="Test.php">./tests/generators</directory>
+		</testsuite>
+
+		<testsuite name="providers">
+			<directory suffix="Test.php">./tests/providers</directory>
+		</testsuite>
+
+		<testsuite name="admin">
+			<directory suffix="Test.php">./tests/admin</directory>
+		</testsuite>
+
+		<testsuite name="frontend">
+			<directory suffix="Test.php">./tests/frontend</directory>
+		</testsuite>
+
+		<testsuite name="database">
+			<directory suffix="Test.php">./tests/database</directory>
+		</testsuite>
+
+		<testsuite name="security">
+			<directory suffix="Test.php">./tests/security</directory>
+		</testsuite>
+
+		<testsuite name="performance">
+			<directory suffix="Test.php">./tests/performance</directory>
+		</testsuite>
+	</testsuites>
+
+	<!-- Code Coverage Configuration -->
+	<coverage processUncoveredFiles="true">
+		<include>
+			<directory suffix=".php">./admin</directory>
+			<directory suffix=".php">./api</directory>
+			<directory suffix=".php">./blocks</directory>
+			<directory suffix=".php">./database</directory>
+			<directory suffix=".php">./generators</directory>
+			<directory suffix=".php">./includes</directory>
+			<directory suffix=".php">./providers</directory>
+			<directory suffix=".php">./public</directory>
+			<file>./wp-ai-site-generator.php</file>
+		</include>
+		<exclude>
+			<directory suffix=".php">./tests</directory>
+			<directory suffix=".php">./vendor</directory>
+			<directory suffix=".php">./node_modules</directory>
+			<directory suffix=".php">./build</directory>
+			<file>./includes/index.php</file>
+			<file>./admin/index.php</file>
+			<file>./public/index.php</file>
+		</exclude>
+		<report>
+			<clover outputFile="tests/coverage/clover.xml"/>
+			<html outputDirectory="tests/coverage/html"/>
+			<text outputFile="tests/coverage/coverage.txt"/>
+			<xml outputDirectory="tests/coverage/xml"/>
+		</report>
+	</coverage>
+
+	<!-- PHP Configuration -->
+	<php>
+		<!-- WordPress Test Environment Variables -->
+		<env name="WP_TESTS_PHPUNIT_POLYFILLS_PATH" value="vendor/yoast/phpunit-polyfills"/>
+		<env name="WP_TESTS_DOMAIN" value="example.org"/>
+		<env name="WP_TESTS_EMAIL" value="admin@example.org"/>
+		<env name="WP_TESTS_TITLE" value="Test Blog"/>
+		<env name="WP_TESTS_SKIP_INSTALL" value="false"/>
+		<env name="WP_PHP_BINARY" value="php"/>
+
+		<!-- Plugin Specific Test Variables -->
+		<env name="AI_SITE_GENERATOR_TEST_MODE" value="true"/>
+		<env name="AI_SITE_GENERATOR_DEBUG" value="true"/>
+		<env name="AI_SITE_GENERATOR_MOCK_API" value="true"/>
+
+		<!-- Test API Keys (Mock/Test Keys Only) -->
+		<env name="TEST_OPENAI_API_KEY" value="test-key-do-not-use-in-production"/>
+		<env name="TEST_ANTHROPIC_API_KEY" value="test-key-do-not-use-in-production"/>
+		<env name="TEST_GOOGLE_API_KEY" value="test-key-do-not-use-in-production"/>
+
+		<!-- Database Configuration -->
+		<env name="WP_TESTS_DB_HOST" value="localhost"/>
+		<env name="WP_TESTS_DB_NAME" value="wordpress_test"/>
+		<env name="WP_TESTS_DB_USER" value="root"/>
+		<env name="WP_TESTS_DB_PASS" value=""/>
+
+		<!-- WordPress Configuration -->
+		<const name="WP_DEBUG" value="true"/>
+		<const name="WP_DEBUG_LOG" value="true"/>
+		<const name="WP_DEBUG_DISPLAY" value="false"/>
+		<const name="SCRIPT_DEBUG" value="true"/>
+		<const name="WP_ENVIRONMENT_TYPE" value="testing"/>
+		<const name="DISABLE_WP_CRON" value="true"/>
+		<const name="WP_MEMORY_LIMIT" value="256M"/>
+		<const name="WP_MAX_MEMORY_LIMIT" value="512M"/>
+
+		<!-- Plugin Constants -->
+		<const name="WP_AI_SITE_GENERATOR_VERSION" value="1.0.0"/>
+		<const name="WP_AI_SITE_GENERATOR_FILE" value="./wp-ai-site-generator.php"/>
+		<const name="WP_AI_SITE_GENERATOR_PATH" value="./"/>
+		<const name="WP_AI_SITE_GENERATOR_URL" value="http://example.org/wp-content/plugins/wp-ai-site-generator/"/>
+	</php>
+
+	<!-- Logging Configuration -->
+	<logging>
+		<junit outputFile="tests/logs/junit.xml"/>
+		<teamcity outputFile="tests/logs/teamcity.txt"/>
+		<testdoxHtml outputFile="tests/logs/testdox.html"/>
+		<testdoxText outputFile="tests/logs/testdox.txt"/>
+		<testdoxXml outputFile="tests/logs/testdox.xml"/>
+		<text outputFile="tests/logs/logfile.txt"/>
+	</logging>
+
+	<!-- Test Listeners -->
+	<listeners>
+		<listener class="WP_AI_Site_Generator\Tests\Listeners\TestListener"/>
+	</listeners>
+
+	<!-- Extensions (PHPUnit 9.5+) -->
+	<extensions>
+		<extension class="WP_AI_Site_Generator\Tests\Extensions\DatabaseSnapshotExtension"/>
+		<extension class="WP_AI_Site_Generator\Tests\Extensions\MockAPIExtension"/>
+	</extensions>
+
+	<!-- Test Groups -->
+	<groups>
+		<include>
+			<group>default</group>
+		</include>
+		<exclude>
+			<group>slow</group>
+			<group>external-api</group>
+		</exclude>
+	</groups>
+</phpunit>

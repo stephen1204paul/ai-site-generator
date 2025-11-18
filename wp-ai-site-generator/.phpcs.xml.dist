@@ -1,0 +1,192 @@
+<?xml version="1.0"?>
+<ruleset name="WP AI Site Generator Coding Standards">
+	<description>WordPress Coding Standards for WP AI Site Generator Plugin</description>
+
+	<!-- What to scan -->
+	<file>.</file>
+
+	<!-- Exclude paths -->
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/build/*</exclude-pattern>
+	<exclude-pattern>/tests/bootstrap.php</exclude-pattern>
+	<exclude-pattern>/tests/fixtures/*</exclude-pattern>
+	<exclude-pattern>/.github/*</exclude-pattern>
+	<exclude-pattern>/.wordpress-org/*</exclude-pattern>
+	<exclude-pattern>/languages/*</exclude-pattern>
+	<exclude-pattern>*.min.js</exclude-pattern>
+	<exclude-pattern>*.min.css</exclude-pattern>
+	<exclude-pattern>*.asset.php</exclude-pattern>
+	<exclude-pattern>/storybook-static/*</exclude-pattern>
+	<exclude-pattern>/.wp-env/*</exclude-pattern>
+
+	<!-- How to scan -->
+	<arg value="sp"/> <!-- Show sniff and progress -->
+	<arg name="basepath" value="."/> <!-- Strip the file paths down to the relevant bit -->
+	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
+	<arg name="parallel" value="8"/> <!-- Enables parallel processing when available for faster results -->
+
+	<!-- Use WordPress-Extra as the base ruleset -->
+	<rule ref="WordPress-Extra">
+		<!-- Allow short array syntax -->
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
+
+		<!-- Allow useful ternary operators -->
+		<exclude name="WordPress.PHP.DisallowShortTernary.Found"/>
+
+		<!-- We organize our own file includes thank you -->
+		<exclude name="PEAR.Files.IncludingFile.UseIncludeOnce"/>
+	</rule>
+
+	<!-- Include WordPress-Docs ruleset for inline documentation -->
+	<rule ref="WordPress-Docs">
+		<!-- Don't require documentation for every hook -->
+		<exclude name="WordPress.NamingConventions.ValidHookName.UseUnderscores"/>
+	</rule>
+
+	<!-- Enforce PSR-4 autoloading compatible file names -->
+	<rule ref="WordPress.Files.FileName">
+		<properties>
+			<property name="strict_class_file_names" value="false"/>
+		</properties>
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+	</rule>
+
+	<!-- Check for PHP cross-version compatibility -->
+	<config name="testVersion" value="7.4-"/>
+	<rule ref="PHPCompatibilityWP"/>
+
+	<!-- Minimum PHP version check -->
+	<rule ref="Generic.PHP.RequireStrictTypes"/>
+
+	<!-- Text domain check -->
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="wp-ai-site-generator"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Allow short echo tags in template files -->
+	<rule ref="WordPress.PHP.DisallowShortOpenTag">
+		<exclude-pattern>*/templates/*</exclude-pattern>
+		<exclude-pattern>*/views/*</exclude-pattern>
+	</rule>
+
+	<!-- Security Rules -->
+	<rule ref="WordPress.Security.EscapeOutput">
+		<properties>
+			<property name="customEscapingFunctions" type="array">
+				<element value="wp_ai_site_generator_esc_json"/>
+				<element value="wp_ai_site_generator_esc_attr_e"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.Security.NonceVerification">
+		<properties>
+			<property name="customNonceVerificationFunctions" type="array">
+				<element value="wp_ai_site_generator_verify_nonce"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Database queries -->
+	<rule ref="WordPress.DB.DirectDatabaseQuery">
+		<exclude-pattern>*/database/*</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress.DB.PreparedSQL">
+		<exclude-pattern>*/migrations/*</exclude-pattern>
+	</rule>
+
+	<!-- File system operations -->
+	<rule ref="WordPress.WP.AlternativeFunctions">
+		<exclude-pattern>*/generators/*</exclude-pattern>
+		<exclude-pattern>*/includes/class-file-generator.php</exclude-pattern>
+	</rule>
+
+	<!-- Custom rules for this project -->
+	<rule ref="Generic.Commenting.Todo"/>
+	<rule ref="Generic.Commenting.Fixme"/>
+
+	<!-- Encourage best practices -->
+	<rule ref="WordPress.WP.DeprecatedFunctions">
+		<properties>
+			<property name="minimum_supported_version" value="6.0"/>
+		</properties>
+	</rule>
+
+	<!-- Code complexity rules -->
+	<rule ref="Generic.Metrics.CyclomaticComplexity">
+		<properties>
+			<property name="complexity" value="20"/>
+			<property name="absoluteComplexity" value="30"/>
+		</properties>
+	</rule>
+
+	<rule ref="Generic.Metrics.NestingLevel">
+		<properties>
+			<property name="nestingLevel" value="5"/>
+			<property name="absoluteNestingLevel" value="10"/>
+		</properties>
+	</rule>
+
+	<!-- Line length with reasonable limits -->
+	<rule ref="Generic.Files.LineLength">
+		<properties>
+			<property name="lineLimit" value="120"/>
+			<property name="absoluteLineLimit" value="150"/>
+		</properties>
+		<exclude-pattern>*/tests/*</exclude-pattern>
+	</rule>
+
+	<!-- Namespacing rules -->
+	<rule ref="PSR12.Files.FileHeader">
+		<exclude name="PSR12.Files.FileHeader.SpacingAfterBlock"/>
+		<exclude name="PSR12.Files.FileHeader.IncorrectOrder"/>
+	</rule>
+
+	<!-- Allow namespaced code -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="wp_ai_site_generator"/>
+				<element value="wpaisg"/>
+				<element value="WP_AI_Site_Generator"/>
+			</property>
+		</properties>
+		<exclude-pattern>*/src/*</exclude-pattern>
+		<exclude-pattern>*/includes/namespaced/*</exclude-pattern>
+	</rule>
+
+	<!-- Test files specific rules -->
+	<rule ref="WordPress.PHP.DevelopmentFunctions">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress.PHP.DiscouragedPHPFunctions">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+	</rule>
+
+	<!-- Allow Yoda conditions but don't enforce -->
+	<rule ref="WordPress.PHP.YodaConditions">
+		<properties>
+			<property name="severity" value="1"/>
+		</properties>
+	</rule>
+
+	<!-- Modern PHP features we want to use -->
+	<rule ref="Universal.Arrays.DisallowShortArraySyntax">
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax.Found"/>
+	</rule>
+
+	<!-- Encourage use of strict types -->
+	<rule ref="Generic.PHP.RequireStrictTypes">
+		<exclude-pattern>*/legacy/*</exclude-pattern>
+		<exclude-pattern>wp-ai-site-generator.php</exclude-pattern>
+	</rule>
+</ruleset>

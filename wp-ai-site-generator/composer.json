@@ -1,0 +1,77 @@
+{
+  "name": "wpaisg/wp-ai-site-generator",
+  "description": "AI-powered website generator for WordPress with conversational interface",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "WP AI Site Generator Team",
+      "homepage": "https://github.com/wpaisg/wp-ai-site-generator"
+    }
+  ],
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=8.0",
+    "openai-php/client": "^0.10",
+    "anthropic/anthropic-php": "^0.1",
+    "guzzlehttp/guzzle": "^7.8",
+    "league/container": "^4.2",
+    "monolog/monolog": "^3.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.6",
+    "mockery/mockery": "^1.6",
+    "wp-coding-standards/wpcs": "^3.1",
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+    "phpcompatibility/phpcompatibility-wp": "^2.1",
+    "brain/monkey": "^2.6",
+    "yoast/phpunit-polyfills": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "WPAISiteGenerator\\": "",
+      "WPAISiteGenerator\\Includes\\": "includes/",
+      "WPAISiteGenerator\\Admin\\": "admin/",
+      "WPAISiteGenerator\\API\\": "api/",
+      "WPAISiteGenerator\\Providers\\": "providers/",
+      "WPAISiteGenerator\\Generators\\": "generators/",
+      "WPAISiteGenerator\\Database\\": "database/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "WPAISiteGenerator\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit",
+    "test:unit": "phpunit --testsuite unit",
+    "test:integration": "phpunit --testsuite integration",
+    "phpcs": "phpcs --standard=WordPress --extensions=php .",
+    "phpcbf": "phpcbf --standard=WordPress --extensions=php .",
+    "lint": "phpcs",
+    "format": "phpcbf",
+    "install-standards": [
+      "\"vendor/bin/phpcs\" --config-set installed_paths vendor/wp-coding-standards/wpcs,vendor/phpcompatibility/phpcompatibility-wp"
+    ],
+    "post-install-cmd": [
+      "@install-standards"
+    ],
+    "post-update-cmd": [
+      "@install-standards"
+    ]
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "extra": {
+    "wordpress": {
+      "version-constraint": ">=6.0"
+    }
+  }
+}

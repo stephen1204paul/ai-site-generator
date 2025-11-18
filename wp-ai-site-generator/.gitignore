@@ -1,0 +1,323 @@
+# ============================================
+# Dependencies & Package Managers
+# ============================================
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-store/
+.yarn/
+
+# Composer
+vendor/
+composer.phar
+
+# ============================================
+# Build Outputs & Compiled Files
+# ============================================
+
+# Build directories
+build/
+dist/
+release/
+*.zip
+*.tar.gz
+
+# Compiled assets
+*.min.js
+*.min.css
+*.map
+*.asset.php
+*.deps.json
+/assets/js/*.js
+/assets/css/*.css
+!/assets/js/src/
+!/assets/css/src/
+
+# Webpack
+.webpack/
+webpack-stats.json
+
+# ============================================
+# Development Environment
+# ============================================
+
+# WordPress Local Environment
+.wp-env/
+.wordpress/
+wordpress/
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+.env.production
+!.env.example
+
+# IDE & Editor Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+.project
+.settings/
+nbproject/
+.buildpath
+.phpintel/
+.phpstorm.meta.php
+
+# ============================================
+# Testing & Coverage
+# ============================================
+
+# PHPUnit
+phpunit.xml
+.phpunit.result.cache
+.phpunit.cache/
+tests/coverage/
+tests/logs/
+tests/reports/
+tests/fixtures/tmp/
+tests/_output/
+
+# Jest
+coverage/
+.jest/
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+
+# E2E Tests
+tests/e2e/videos/
+tests/e2e/screenshots/
+tests/e2e/downloads/
+tests/e2e/artifacts/
+
+# ============================================
+# Documentation & Storybook
+# ============================================
+
+# Storybook
+storybook-static/
+.storybook/preview-stats.json
+
+# Documentation builds
+docs/_build/
+docs/.docusaurus/
+docs/build/
+
+# ============================================
+# Operating System Files
+# ============================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+.directory
+.Trash-*
+.nfs*
+
+# ============================================
+# Logs & Temporary Files
+# ============================================
+
+# Logs
+*.log
+logs/
+debug.log
+error.log
+access.log
+wp-content/debug.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+.cache/
+*.cache
+
+# ============================================
+# WordPress Specific
+# ============================================
+
+# WordPress core files
+/wordpress/
+/wp-admin/
+/wp-includes/
+/wp-content/uploads/
+/wp-content/upgrade/
+/wp-content/backup*/
+/wp-content/backups/
+/wp-content/cache/
+/wp-content/w3tc-config/
+/wp-content/advanced-cache.php
+/wp-content/wp-cache-config.php
+/wp-content/plugins/hello.php
+/wp-config.php
+/wp-config-sample.php
+/index.php
+/license.txt
+/readme.html
+/wp-*.php
+/xmlrpc.php
+
+# Plugin development
+languages/*.pot~
+languages/*.po~
+languages/backup-*.po~
+
+# ============================================
+# Security & Sensitive Data
+# ============================================
+
+# API Keys and Secrets
+*.key
+*.pem
+*.crt
+*.cert
+*.p12
+secrets.json
+credentials.json
+auth.json
+
+# Database
+*.sql
+*.sqlite
+*.db
+database.sqlite
+
+# ============================================
+# Package & Deployment
+# ============================================
+
+# Package files
+*.tgz
+*.tar
+*.rar
+*.7z
+
+# Deployment
+.deploy/
+.deployignore
+deploy_key
+deploy_key.pub
+
+# CI/CD
+.gitlab-ci-local/
+.github/workflows/local/
+
+# ============================================
+# Custom & Project Specific
+# ============================================
+
+# Mock data
+/tests/mock-data/generated/
+/tests/fixtures/generated/
+
+# User uploaded content (in development)
+/uploads/
+/user-content/
+
+# Generated documentation
+/api-docs/
+/code-docs/
+
+# Performance reports
+/performance-reports/
+/lighthouse-reports/
+
+# Bundle analysis
+/bundle-analysis/
+stats.json
+
+# Translation files (generated)
+/languages/*.mo
+
+# Cache directories
+/cache/
+/.cache/
+/wp-content/cache/
+
+# Backup files
+/backups/
+*.backup
+
+# Lock files (optionally ignore based on team preference)
+# Uncomment if you don't want to commit lock files
+# package-lock.json
+# composer.lock
+# yarn.lock
+# pnpm-lock.yaml
+
+# ============================================
+# Exceptions (Don't ignore these)
+# ============================================
+
+# Keep these files
+!.gitignore
+!.gitkeep
+!.htaccess
+!.editorconfig
+!.eslintrc.json
+!.phpcs.xml.dist
+!.wp-env.json
+!webpack.config.js
+!phpunit.xml.dist
+!README.md
+!LICENSE
+!CHANGELOG.md
+
+# Keep source directories
+!/src/
+!/assets/src/
+!/includes/
+!/admin/
+!/public/
+!/blocks/src/
+
+# Keep configuration templates
+!*.example
+!*.sample
+!*.dist

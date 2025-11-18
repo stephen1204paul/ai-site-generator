@@ -1,0 +1,214 @@
+{
+  "name": "wp-ai-site-generator",
+  "version": "1.0.0",
+  "description": "AI-powered website generator for WordPress with conversational interface",
+  "author": "WP AI Site Generator Team",
+  "license": "GPL-2.0-or-later",
+  "keywords": [
+    "wordpress",
+    "plugin",
+    "ai",
+    "site-generator",
+    "block-editor"
+  ],
+  "homepage": "https://github.com/wpaisg/wp-ai-site-generator#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wpaisg/wp-ai-site-generator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wpaisg/wp-ai-site-generator/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "main": "build/index.js",
+  "scripts": {
+    "start": "webpack serve --mode development --config webpack.config.js",
+    "build": "webpack --mode production --config webpack.config.js",
+    "build:production": "NODE_ENV=production npm run build && npm run build:pot",
+    "build:pot": "wp i18n make-pot . languages/wp-ai-site-generator.pot --exclude=node_modules,vendor,tests,build",
+    "check-engines": "wp-scripts check-engines",
+    "check-licenses": "wp-scripts check-licenses",
+    "env:start": "wp-env start",
+    "env:stop": "wp-env stop",
+    "env:restart": "wp-env stop && wp-env start",
+    "env:reset": "wp-env destroy && wp-env start",
+    "env:install-plugins": "wp-env run cli wp plugin install query-monitor --activate",
+    "env:clean": "wp-env clean",
+    "format": "wp-scripts format",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "lint:md:docs": "wp-scripts lint-md-docs",
+    "lint:pkg-json": "wp-scripts lint-pkg-json",
+    "lint": "npm run lint:css && npm run lint:js && npm run lint:pkg-json",
+    "packages-update": "wp-scripts packages-update",
+    "plugin-zip": "wp-scripts plugin-zip",
+    "test:unit": "wp-scripts test-unit-js",
+    "test:unit:watch": "npm run test:unit -- --watch",
+    "test:unit:coverage": "npm run test:unit -- --coverage",
+    "test:e2e": "wp-scripts test-e2e",
+    "test:e2e:watch": "npm run test:e2e -- --watch",
+    "test:e2e:debug": "wp-scripts --inspect-brk test-e2e --puppeteer-devtools",
+    "test:cypress": "cypress run",
+    "test:cypress:open": "cypress open",
+    "test:performance": "wp-scripts test-performance",
+    "test": "npm run lint && npm run test:unit",
+    "watch": "webpack --mode development --watch --config webpack.config.js",
+    "dev": "npm run env:start && npm run watch",
+    "analyze": "wp-scripts build --webpack-bundle-analyzer",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "dependencies": {
+    "@wordpress/api-fetch": "^7.8.0",
+    "@wordpress/block-editor": "^14.3.0",
+    "@wordpress/blocks": "^13.8.0",
+    "@wordpress/components": "^28.8.0",
+    "@wordpress/compose": "^7.8.0",
+    "@wordpress/core-data": "^7.8.0",
+    "@wordpress/data": "^10.8.0",
+    "@wordpress/dom-ready": "^4.8.0",
+    "@wordpress/edit-post": "^8.8.0",
+    "@wordpress/editor": "^14.8.0",
+    "@wordpress/element": "^6.8.0",
+    "@wordpress/hooks": "^4.8.0",
+    "@wordpress/i18n": "^5.8.0",
+    "@wordpress/icons": "^10.8.0",
+    "@wordpress/notices": "^5.8.0",
+    "@wordpress/plugins": "^7.8.0",
+    "@wordpress/primitives": "^4.8.0",
+    "@wordpress/rich-text": "^7.8.0",
+    "@wordpress/server-side-render": "^5.8.0",
+    "@wordpress/url": "^4.8.0",
+    "classnames": "^2.5.1",
+    "lodash": "^4.17.21",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-markdown": "^9.0.1",
+    "react-syntax-highlighter": "^15.5.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.3",
+    "@babel/preset-react": "^7.24.7",
+    "@playwright/test": "^1.45.0",
+    "@storybook/addon-essentials": "^8.2.0",
+    "@storybook/addon-interactions": "^8.2.0",
+    "@storybook/addon-links": "^8.2.0",
+    "@storybook/blocks": "^8.2.0",
+    "@storybook/react": "^8.2.0",
+    "@storybook/react-webpack5": "^8.2.0",
+    "@storybook/testing-library": "^0.2.0",
+    "@testing-library/jest-dom": "^6.4.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.5.0",
+    "@types/jest": "^29.5.0",
+    "@types/wordpress__blocks": "^12.5.0",
+    "@types/wordpress__components": "^23.0.0",
+    "@wordpress/babel-preset-default": "^8.8.0",
+    "@wordpress/browserslist-config": "^6.8.0",
+    "@wordpress/dependency-extraction-webpack-plugin": "^6.8.0",
+    "@wordpress/e2e-test-utils": "^11.8.0",
+    "@wordpress/env": "^10.8.0",
+    "@wordpress/eslint-plugin": "^21.1.0",
+    "@wordpress/jest-preset-default": "^12.8.0",
+    "@wordpress/prettier-config": "^4.8.0",
+    "@wordpress/scripts": "^30.0.0",
+    "@wordpress/stylelint-config": "^23.0.0",
+    "autoprefixer": "^10.4.0",
+    "babel-loader": "^9.1.0",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "cross-env": "^7.0.3",
+    "css-loader": "^7.1.0",
+    "css-minimizer-webpack-plugin": "^5.0.0",
+    "cypress": "^13.13.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jest": "^28.6.0",
+    "eslint-plugin-jsx-a11y": "^6.9.0",
+    "eslint-plugin-react": "^7.35.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "husky": "^9.1.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "lint-staged": "^15.2.0",
+    "mini-css-extract-plugin": "^2.9.0",
+    "postcss": "^8.4.0",
+    "postcss-loader": "^8.1.0",
+    "postcss-preset-env": "^9.5.0",
+    "prettier": "^3.3.0",
+    "sass": "^1.77.0",
+    "sass-loader": "^16.0.0",
+    "storybook": "^8.2.0",
+    "style-loader": "^4.0.0",
+    "stylelint": "^16.8.0",
+    "terser-webpack-plugin": "^5.3.0",
+    "typescript": "^5.5.0",
+    "webpack": "^5.93.0",
+    "webpack-dev-server": "^5.0.0",
+    "webpack-bundle-analyzer": "^4.10.0",
+    "webpack-cli": "^5.1.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "wp-scripts format",
+      "wp-scripts lint-js"
+    ],
+    "*.{css,scss}": [
+      "wp-scripts lint-style"
+    ],
+    "*.php": [
+      "composer run-script format",
+      "composer run-script lint"
+    ],
+    "*.json": [
+      "wp-scripts lint-pkg-json"
+    ]
+  },
+  "browserslist": [
+    "extends @wordpress/browserslist-config"
+  ],
+  "prettier": "@wordpress/prettier-config",
+  "stylelint": {
+    "extends": "@wordpress/stylelint-config"
+  },
+  "eslintConfig": {
+    "extends": [
+      "plugin:@wordpress/eslint-plugin/recommended"
+    ],
+    "env": {
+      "browser": true,
+      "es2021": true,
+      "node": true
+    },
+    "settings": {
+      "react": {
+        "version": "18.2"
+      }
+    }
+  },
+  "jest": {
+    "preset": "@wordpress/jest-preset-default",
+    "testEnvironment": "jsdom",
+    "moduleNameMapper": {
+      "\\.(css|less|scss|sass)$": "identity-obj-proxy"
+    },
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/js/setup.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/vendor/",
+      "/build/"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!src/**/*.test.{js,jsx}",
+      "!src/**/index.js"
+    ]
+  }
+}

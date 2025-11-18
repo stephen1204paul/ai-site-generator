@@ -1,0 +1,89 @@
+{
+  "sample_pages": [
+    {
+      "title": "Home Page",
+      "type": "landing_page",
+      "sections": [
+        {
+          "type": "hero",
+          "content": {
+            "headline": "Welcome to Our Site",
+            "subheadline": "Discover amazing features",
+            "cta_text": "Get Started",
+            "cta_link": "#signup"
+          }
+        },
+        {
+          "type": "features",
+          "content": {
+            "title": "Our Features",
+            "items": [
+              {
+                "title": "Fast Performance",
+                "description": "Lightning fast page loads",
+                "icon": "bolt"
+              },
+              {
+                "title": "SEO Optimized",
+                "description": "Built-in SEO best practices",
+                "icon": "search"
+              },
+              {
+                "title": "Mobile Responsive",
+                "description": "Looks great on all devices",
+                "icon": "mobile"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "sample_blocks": [
+    {
+      "name": "hero-block",
+      "title": "Hero Block",
+      "category": "layout",
+      "attributes": {
+        "headline": {
+          "type": "string",
+          "default": "Welcome"
+        },
+        "backgroundColor": {
+          "type": "string",
+          "default": "#ffffff"
+        }
+      }
+    }
+  ],
+  "sample_templates": [
+    {
+      "name": "business-landing",
+      "title": "Business Landing Page",
+      "description": "Professional landing page for businesses",
+      "sections": [
+        "hero",
+        "features",
+        "testimonials",
+        "cta",
+        "footer"
+      ]
+    }
+  ],
+  "api_responses": {
+    "success": {
+      "status": "success",
+      "message": "Content generated successfully",
+      "data": {
+        "content": "<div>Generated content</div>",
+        "tokens_used": 150,
+        "model": "gpt-3.5-turbo"
+      }
+    },
+    "error": {
+      "status": "error",
+      "message": "API request failed",
+      "error_code": "api_error"
+    }
+  }
+}
