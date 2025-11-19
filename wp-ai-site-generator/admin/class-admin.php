@@ -200,6 +200,29 @@ class Admin {
 			);
 		}
 
+		// Knowledge Base component
+		if ( $this->is_page( 'knowledge-base' ) ) {
+			wp_enqueue_script(
+				$this->plugin_name . '-knowledge-base',
+				plugin_dir_url( __FILE__ ) . 'js/knowledge-base.js',
+				array( 'jquery', 'wp-api' ),
+				$this->version,
+				true
+			);
+
+			// Also enqueue React UI if needed
+			wp_enqueue_script(
+				$this->plugin_name . '-knowledge-base-ui',
+				plugin_dir_url( __FILE__ ) . 'js/knowledge-base-ui.jsx',
+				array( 'wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n' ),
+				$this->version,
+				true
+			);
+
+			// Enable media uploader for file handling
+			wp_enqueue_media();
+		}
+
 		// Localize script with necessary data
 		wp_localize_script(
 			$this->plugin_name,
@@ -427,6 +450,16 @@ class Admin {
 			array( $this, 'display_quality_dashboard_page' )
 		);
 
+		// Knowledge Base submenu
+		add_submenu_page(
+			$this->plugin_name,
+			__( 'Knowledge Base', 'wp-ai-site-generator' ),
+			__( 'Knowledge Base', 'wp-ai-site-generator' ),
+			'manage_options',
+			$this->plugin_name . '-knowledge-base',
+			array( $this, 'display_knowledge_base_page' )
+		);
+
 		// Help submenu
 		add_submenu_page(
 			$this->plugin_name,
@@ -540,6 +573,15 @@ class Admin {
 	 */
 	public function display_help_page() {
 		include_once 'partials/admin-help-display.php';
+	}
+
+	/**
+	 * Display knowledge base page.
+	 *
+	 * @since    1.0.0
+	 */
+	public function display_knowledge_base_page() {
+		include_once 'partials/knowledge-base-page.php';
 	}
 
 	/**

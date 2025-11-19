@@ -17,6 +17,10 @@ use WPAISiteGenerator\API\REST_Controller;
 use WPAISiteGenerator\Database\DB_Handler;
 use WPAISiteGenerator\Providers\Provider_Manager;
 use WPAISiteGenerator\Generators\Block_Generator;
+use AI_Site_Generator\Includes\Knowledge_Base;
+use AI_Site_Generator\Includes\RAG_Integration;
+use AI_Site_Generator\API\KB_Endpoint;
+use AI_Site_Generator\Database\KB_DB_Handler;
 
 /**
  * The core plugin class.
@@ -98,6 +102,33 @@ class Plugin {
 	 * @var      Block_Generator    $block_generator    The block generator.
 	 */
 	protected $block_generator;
+
+	/**
+	 * The knowledge base instance.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      Knowledge_Base    $knowledge_base    The knowledge base instance.
+	 */
+	protected $knowledge_base;
+
+	/**
+	 * The RAG integration instance.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      RAG_Integration    $rag_integration    The RAG integration instance.
+	 */
+	protected $rag_integration;
+
+	/**
+	 * The KB REST API endpoint.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      KB_Endpoint    $kb_endpoint    The KB REST API endpoint.
+	 */
+	protected $kb_endpoint;
 
 	/**
 	 * The quality integration handler.
@@ -257,6 +288,16 @@ class Plugin {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'generators/class-lead-magnet-generator.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'database/class-funnel-db-handler.php';
 
+		/**
+		 * Knowledge Base and RAG System classes.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-knowledge-base.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-document-processor.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-vector-embeddings.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rag-integration.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'database/class-kb-db-handler.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'api/class-kb-endpoint.php';
+
 		$this->loader = new Loader();
 	}
 
@@ -332,6 +373,12 @@ class Plugin {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'api/class-funnel-endpoint.php';
 		$funnel_endpoint = new \WP_AI_Site_Generator\API\Funnel_Endpoint();
 		$this->loader->add_action( 'rest_api_init', $funnel_endpoint, 'register_routes' );
+
+		// Register Knowledge Base API endpoints
+		if ( ! isset( $this->kb_endpoint ) ) {
+			$this->kb_endpoint = new KB_Endpoint();
+		}
+		$this->loader->add_action( 'rest_api_init', $this->kb_endpoint, 'register_routes' );
 	}
 
 	/**
@@ -367,6 +414,16 @@ class Plugin {
 		// Create funnel database tables on activation
 		register_activation_hook( plugin_dir_path( dirname( __FILE__ ) ) . 'wp-ai-site-generator.php',
 			array( $this->funnel_db_handler, 'create_tables' ) );
+
+		// Initialize Knowledge Base System
+		$this->knowledge_base = Knowledge_Base::get_instance();
+		$this->rag_integration = RAG_Integration::get_instance();
+		$this->kb_endpoint = new KB_Endpoint();
+
+		// Create KB database tables on activation
+		$kb_db_handler = KB_DB_Handler::get_instance();
+		register_activation_hook( plugin_dir_path( dirname( __FILE__ ) ) . 'wp-ai-site-generator.php',
+			array( $kb_db_handler, 'create_tables' ) );
 
 		// Set up cron jobs for background processing
 		$this->setup_cron_jobs();

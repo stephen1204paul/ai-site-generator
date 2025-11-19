@@ -19,6 +19,7 @@ use WPAISiteGenerator\Includes\Quality_Scorer;
 use WPAISiteGenerator\Includes\Output_Validator;
 use WPAISiteGenerator\Includes\Prompts\Prompt_Templates;
 use WPAISiteGenerator\Database\DB_Handler;
+use AI_Site_Generator\Includes\RAG_Integration;
 use WP_Error;
 
 /**
@@ -103,6 +104,15 @@ class Generation_Orchestrator {
 	private $db_handler;
 
 	/**
+	 * RAG Integration instance.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      RAG_Integration    $rag_integration    RAG Integration instance.
+	 */
+	private $rag_integration;
+
+	/**
 	 * Current generation job ID.
 	 *
 	 * @since    1.0.0
@@ -140,6 +150,7 @@ class Generation_Orchestrator {
 		$this->validator = new Output_Validator();
 		$this->prompt_templates = new Prompt_Templates();
 		$this->db_handler = new DB_Handler();
+		$this->rag_integration = RAG_Integration::get_instance();
 	}
 
 	/**
