@@ -99,6 +99,16 @@ class Activator {
 				error_log( 'WP AI Site Generator Migrations Executed: ' . wp_json_encode( $result['executed'] ) );
 			}
 		}
+
+		// Create chat-related tables
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'database/class-chat-db-handler.php';
+		$chat_db = new \WPAISiteGenerator\Database\Chat_DB_Handler();
+		$chat_db->create_tables();
+
+		// Create feedback-related tables
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'database/class-feedback-db-handler.php';
+		$feedback_db = new \WP_AI_Site_Generator\Database\Feedback_DB_Handler();
+		$feedback_db->create_tables();
 	}
 
 	/**
@@ -295,9 +305,33 @@ class Activator {
 			'batch_generation'      => true,
 			'template_library'      => true,
 			'content_optimization'  => true,
-			'a_b_testing'           => false,
+			'a_b_testing'           => true,
 			'analytics_integration' => true,
 			'export_import'         => true,
+			'user_feedback'         => true,
+			'feedback_learning'     => true,
+		) );
+
+		// Feedback settings
+		add_option( 'wp_ai_site_generator_feedback_settings', array(
+			'enabled'                    => true,
+			'prompt_after_generation'    => true,
+			'allow_anonymous_feedback'   => true,
+			'send_learning_reports'      => true,
+			'auto_adjust_prompts'        => false,
+			'min_feedback_for_learning'  => 10,
+			'feedback_categories'        => array(
+				'content_quality',
+				'technical_accuracy',
+				'relevance',
+				'completeness',
+				'creativity',
+				'formatting',
+				'tone_style',
+				'length',
+				'structure',
+				'usefulness',
+			),
 		) );
 
 		// Usage limits
@@ -373,6 +407,16 @@ class Activator {
 		// Schedule weekly reports
 		if ( ! wp_next_scheduled( 'waisg_weekly_report' ) ) {
 			wp_schedule_event( time() + WEEK_IN_SECONDS, 'weekly', 'waisg_weekly_report' );
+		}
+
+		// Schedule daily feedback learning
+		if ( ! wp_next_scheduled( 'wp_ai_site_generator_daily_learning' ) ) {
+			wp_schedule_event( time() + DAY_IN_SECONDS, 'daily', 'wp_ai_site_generator_daily_learning' );
+		}
+
+		// Schedule daily A/B test check
+		if ( ! wp_next_scheduled( 'wp_ai_site_generator_daily_ab_check' ) ) {
+			wp_schedule_event( time() + DAY_IN_SECONDS, 'daily', 'wp_ai_site_generator_daily_ab_check' );
 		}
 	}
 

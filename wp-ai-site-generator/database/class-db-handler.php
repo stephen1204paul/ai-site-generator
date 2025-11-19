@@ -39,6 +39,15 @@ class DB_Handler {
 	private $tables;
 
 	/**
+	 * Chat database handler.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      Chat_DB_Handler    $chat_db_handler    Chat database handler.
+	 */
+	private $chat_db_handler;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since    1.0.0
@@ -47,6 +56,7 @@ class DB_Handler {
 		global $wpdb;
 		$this->wpdb = $wpdb;
 		$this->set_table_names();
+		$this->chat_db_handler = new Chat_DB_Handler();
 	}
 
 	/**
@@ -730,5 +740,98 @@ class DB_Handler {
 			default:
 				return gmdate( 'Y-m-d H:i:s', strtotime( '-1 month' ) );
 		}
+	}
+
+	/**
+	 * Chat-related database operations (delegation to Chat_DB_Handler).
+	 */
+
+	/**
+	 * Insert conversation.
+	 *
+	 * @since    1.0.0
+	 * @param    array    $data    Conversation data.
+	 * @return   int|\WP_Error      Conversation ID or error.
+	 */
+	public function insert_conversation( $data ) {
+		return $this->chat_db_handler->insert_conversation( $data );
+	}
+
+	/**
+	 * Get conversation.
+	 *
+	 * @since    1.0.0
+	 * @param    int    $conversation_id    Conversation ID.
+	 * @return   array|null                 Conversation data or null.
+	 */
+	public function get_conversation( $conversation_id ) {
+		return $this->chat_db_handler->get_conversation( $conversation_id );
+	}
+
+	/**
+	 * Get conversations by parent.
+	 *
+	 * @since    1.0.0
+	 * @param    int    $parent_id    Parent conversation ID.
+	 * @return   array                Conversations.
+	 */
+	public function get_conversations_by_parent( $parent_id ) {
+		return $this->chat_db_handler->get_conversations_by_parent( $parent_id );
+	}
+
+	/**
+	 * Insert message.
+	 *
+	 * @since    1.0.0
+	 * @param    array    $data    Message data.
+	 * @return   int|\WP_Error       Message ID or error.
+	 */
+	public function insert_message( $data ) {
+		return $this->chat_db_handler->insert_message( $data );
+	}
+
+	/**
+	 * Get messages.
+	 *
+	 * @since    1.0.0
+	 * @param    int      $conversation_id    Conversation ID.
+	 * @param    array    $args               Query arguments.
+	 * @return   array                        Messages.
+	 */
+	public function get_messages( $conversation_id, $args = array() ) {
+		return $this->chat_db_handler->get_messages( $conversation_id, $args );
+	}
+
+	/**
+	 * Save context.
+	 *
+	 * @since    1.0.0
+	 * @param    int      $conversation_id    Conversation ID.
+	 * @param    array    $context            Context data.
+	 * @return   bool|\WP_Error               Success or error.
+	 */
+	public function save_context( $conversation_id, $context ) {
+		return $this->chat_db_handler->save_context( $conversation_id, $context );
+	}
+
+	/**
+	 * Get context.
+	 *
+	 * @since    1.0.0
+	 * @param    int    $conversation_id    Conversation ID.
+	 * @return   array|null                 Context data or null.
+	 */
+	public function get_context( $conversation_id ) {
+		return $this->chat_db_handler->get_context( $conversation_id );
+	}
+
+	/**
+	 * Create chat tables.
+	 *
+	 * @since    1.0.0
+	 * @return   bool    Success status.
+	 */
+	public function create_chat_tables() {
+		return $this->chat_db_handler->create_tables();
 	}
 }

@@ -258,6 +258,11 @@ class Plugin {
 		$this->rest_controller = new REST_Controller( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'rest_api_init', $this->rest_controller, 'register_routes' );
+
+		// Register Chat Enhancement API endpoints
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'api/class-chat-enhancement-endpoint.php';
+		$chat_endpoint = new \WPAISiteGenerator\API\Chat_Enhancement_Endpoint();
+		$this->loader->add_action( 'rest_api_init', $chat_endpoint, 'register_routes' );
 	}
 
 	/**
