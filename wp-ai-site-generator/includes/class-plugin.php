@@ -118,6 +118,60 @@ class Plugin {
 	protected $block_library;
 
 	/**
+	 * The sales funnel manager.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      \WP_AI_Site_Generator\Includes\Sales_Funnel    $sales_funnel    The sales funnel manager.
+	 */
+	protected $sales_funnel;
+
+	/**
+	 * The conversion tracker.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      \WP_AI_Site_Generator\Includes\Conversion_Tracker    $conversion_tracker    The conversion tracker.
+	 */
+	protected $conversion_tracker;
+
+	/**
+	 * The feedback loop marketing system.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      \WP_AI_Site_Generator\Includes\Feedback_Loop_Marketing    $feedback_loop_marketing    The feedback loop marketing system.
+	 */
+	protected $feedback_loop_marketing;
+
+	/**
+	 * The email integration handler.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      \WP_AI_Site_Generator\Includes\Email_Integration    $email_integration    The email integration handler.
+	 */
+	protected $email_integration;
+
+	/**
+	 * The funnel database handler.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      \WP_AI_Site_Generator\Database\Funnel_DB_Handler    $funnel_db_handler    The funnel database handler.
+	 */
+	protected $funnel_db_handler;
+
+	/**
+	 * The lead magnet generator.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      \WP_AI_Site_Generator\Generators\Lead_Magnet_Generator    $lead_magnet_generator    The lead magnet generator.
+	 */
+	protected $lead_magnet_generator;
+
+	/**
 	 * Define the core functionality of the plugin.
 	 *
 	 * @since    1.0.0
@@ -193,6 +247,16 @@ class Plugin {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'generators/class-theme-adapter.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'generators/class-page-builder.php';
 
+		/**
+		 * Sales Funnel and Marketing System classes.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-sales-funnel.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-conversion-tracker.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-feedback-loop-marketing.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-email-integration.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'generators/class-lead-magnet-generator.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'database/class-funnel-db-handler.php';
+
 		$this->loader = new Loader();
 	}
 
@@ -263,6 +327,11 @@ class Plugin {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'api/class-chat-enhancement-endpoint.php';
 		$chat_endpoint = new \WPAISiteGenerator\API\Chat_Enhancement_Endpoint();
 		$this->loader->add_action( 'rest_api_init', $chat_endpoint, 'register_routes' );
+
+		// Register Funnel API endpoints
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'api/class-funnel-endpoint.php';
+		$funnel_endpoint = new \WP_AI_Site_Generator\API\Funnel_Endpoint();
+		$this->loader->add_action( 'rest_api_init', $funnel_endpoint, 'register_routes' );
 	}
 
 	/**
@@ -286,6 +355,18 @@ class Plugin {
 
 		// Initialize block library
 		$this->block_library = Block_Library::get_instance();
+
+		// Initialize Sales Funnel System
+		$this->sales_funnel = new \WP_AI_Site_Generator\Includes\Sales_Funnel();
+		$this->conversion_tracker = new \WP_AI_Site_Generator\Includes\Conversion_Tracker();
+		$this->feedback_loop_marketing = new \WP_AI_Site_Generator\Includes\Feedback_Loop_Marketing();
+		$this->email_integration = new \WP_AI_Site_Generator\Includes\Email_Integration();
+		$this->funnel_db_handler = new \WP_AI_Site_Generator\Database\Funnel_DB_Handler();
+		$this->lead_magnet_generator = new \WP_AI_Site_Generator\Generators\Lead_Magnet_Generator();
+
+		// Create funnel database tables on activation
+		register_activation_hook( plugin_dir_path( dirname( __FILE__ ) ) . 'wp-ai-site-generator.php',
+			array( $this->funnel_db_handler, 'create_tables' ) );
 
 		// Set up cron jobs for background processing
 		$this->setup_cron_jobs();
