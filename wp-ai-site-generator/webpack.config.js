@@ -26,14 +26,15 @@ module.exports = {
     'admin/template-manager': path.resolve(__dirname, 'src', 'admin', 'template-manager.js'),
 
     // Block editor components
-    'blocks/index': path.resolve(__dirname, 'src', 'blocks', 'index.js'),
-    'blocks/hero': path.resolve(__dirname, 'src', 'blocks', 'hero', 'index.js'),
-    'blocks/features': path.resolve(__dirname, 'src', 'blocks', 'features', 'index.js'),
-    'blocks/testimonials': path.resolve(__dirname, 'src', 'blocks', 'testimonials', 'index.js'),
-    'blocks/pricing': path.resolve(__dirname, 'src', 'blocks', 'pricing', 'index.js'),
-    'blocks/cta': path.resolve(__dirname, 'src', 'blocks', 'cta', 'index.js'),
-    'blocks/team': path.resolve(__dirname, 'src', 'blocks', 'team', 'index.js'),
-    'blocks/faq': path.resolve(__dirname, 'src', 'blocks', 'faq', 'index.js'),
+    'blocks/index': path.resolve(__dirname, 'blocks', 'src', 'index.js'),
+    'blocks/hero': path.resolve(__dirname, 'blocks', 'src', 'hero', 'index.js'),
+    'blocks/features': path.resolve(__dirname, 'blocks', 'src', 'features', 'index.js'),
+    'blocks/testimonials': path.resolve(__dirname, 'blocks', 'src', 'testimonials', 'index.js'),
+    'blocks/pricing': path.resolve(__dirname, 'blocks', 'src', 'pricing', 'index.js'),
+    'blocks/cta': path.resolve(__dirname, 'blocks', 'src', 'cta', 'index.js'),
+    'blocks/team': path.resolve(__dirname, 'blocks', 'src', 'team', 'index.js'),
+    'blocks/faq': path.resolve(__dirname, 'blocks', 'src', 'faq', 'index.js'),
+    'blocks/contact': path.resolve(__dirname, 'blocks', 'src', 'contact', 'index.js'),
 
     // Gutenberg sidebar components
     'sidebar/index': path.resolve(__dirname, 'src', 'sidebar', 'index.js'),

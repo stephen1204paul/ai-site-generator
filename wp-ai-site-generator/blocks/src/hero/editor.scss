@@ -1,0 +1,75 @@
+/**
+ * Hero Block Editor Styles
+ *
+ * @package WPAISiteGenerator
+ */
+
+.waisg-hero {
+	// Editor-specific adjustments
+	.block-editor-rich-text__editable {
+		background: transparent;
+		padding: 0;
+	}
+
+	// Regenerate button styling
+	.waisg-regenerate-field {
+		margin-top: 8px;
+		margin-bottom: 8px;
+	}
+
+	// Editor placeholder styling
+	.components-placeholder {
+		min-height: 300px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	// AI generation controls
+	&__editor-controls {
+		background: rgba(255, 255, 255, 0.95);
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		padding: 12px;
+		margin-bottom: 16px;
+	}
+}
+
+// Inspector panel styling
+.waisg-generate-button {
+	width: 100%;
+	justify-content: center;
+	margin-top: 12px;
+
+	.components-spinner {
+		margin-right: 8px;
+	}
+}
+
+.waisg-error-message {
+	color: #cc1818;
+	margin-top: 12px;
+	padding: 8px;
+	background: #ffeaea;
+	border-left: 3px solid #cc1818;
+	border-radius: 2px;
+}
+
+.waisg-success-message {
+	color: #007017;
+	margin-top: 12px;
+	padding: 8px;
+	background: #eaffef;
+	border-left: 3px solid #007017;
+	border-radius: 2px;
+}
+
+// Block editor toolbar adjustments
+.block-editor-block-toolbar {
+	.waisg-ai-toolbar-button {
+		svg {
+			width: 20px;
+			height: 20px;
+		}
+	}
+}

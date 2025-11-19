@@ -1,0 +1,96 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "waisg/hero",
+	"version": "1.0.0",
+	"title": "AI Hero Section",
+	"category": "waisg-blocks",
+	"icon": "cover-image",
+	"description": "AI-generated hero section with heading, text, and call-to-action",
+	"supports": {
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"gradients": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"blockGap": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"align": [ "wide", "full" ],
+		"__experimentalBorder": {
+			"color": true,
+			"radius": true,
+			"width": true
+		}
+	},
+	"attributes": {
+		"title": {
+			"type": "string",
+			"default": "Welcome to Our Site"
+		},
+		"subtitle": {
+			"type": "string",
+			"default": "Discover amazing possibilities"
+		},
+		"description": {
+			"type": "string",
+			"default": "Create beautiful websites with AI-powered content generation"
+		},
+		"primaryButtonText": {
+			"type": "string",
+			"default": "Get Started"
+		},
+		"primaryButtonUrl": {
+			"type": "string",
+			"default": "#"
+		},
+		"secondaryButtonText": {
+			"type": "string",
+			"default": "Learn More"
+		},
+		"secondaryButtonUrl": {
+			"type": "string",
+			"default": "#"
+		},
+		"backgroundImage": {
+			"type": "object",
+			"default": {
+				"id": 0,
+				"url": "",
+				"alt": ""
+			}
+		},
+		"overlayOpacity": {
+			"type": "number",
+			"default": 0.5
+		},
+		"contentAlignment": {
+			"type": "string",
+			"default": "center"
+		},
+		"minHeight": {
+			"type": "string",
+			"default": "500px"
+		},
+		"aiPrompt": {
+			"type": "string",
+			"default": ""
+		},
+		"aiGenerated": {
+			"type": "boolean",
+			"default": false
+		}
+	},
+	"textdomain": "wp-ai-site-generator",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./editor.css",
+	"style": "file:./style.css"
+}

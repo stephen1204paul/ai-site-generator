@@ -100,6 +100,24 @@ class Plugin {
 	protected $block_generator;
 
 	/**
+	 * The quality integration handler.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      Quality_Integration    $quality_integration    The quality integration handler.
+	 */
+	protected $quality_integration;
+
+	/**
+	 * The block library manager.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      Block_Library    $block_library    The block library manager.
+	 */
+	protected $block_library;
+
+	/**
 	 * Define the core functionality of the plugin.
 	 *
 	 * @since    1.0.0
@@ -159,6 +177,21 @@ class Plugin {
 		 * The class responsible for block generation.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'generators/class-block-generator.php';
+
+		/**
+		 * Quality monitoring and metrics classes.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-quality-scorer.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-quality-metrics.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-quality-integration.php';
+
+		/**
+		 * Block library and pattern generator classes.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-block-library.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'generators/class-pattern-generator.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'generators/class-theme-adapter.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'generators/class-page-builder.php';
 
 		$this->loader = new Loader();
 	}
@@ -242,6 +275,12 @@ class Plugin {
 
 		// Initialize block generator
 		$this->block_generator = new Block_Generator( $this->provider_manager );
+
+		// Initialize quality monitoring and integration
+		$this->quality_integration = new Quality_Integration();
+
+		// Initialize block library
+		$this->block_library = Block_Library::get_instance();
 
 		// Set up cron jobs for background processing
 		$this->setup_cron_jobs();

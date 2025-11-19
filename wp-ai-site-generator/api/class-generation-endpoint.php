@@ -21,6 +21,10 @@ use WPAISiteGenerator\Providers\Provider_Manager;
 use WPAISiteGenerator\Generators\Site_Generator;
 use WPAISiteGenerator\Generators\Page_Generator;
 use WPAISiteGenerator\Generators\Block_Generator;
+use WPAISiteGenerator\Includes\Generation_Orchestrator;
+use WPAISiteGenerator\Includes\Generation_Job;
+use WPAISiteGenerator\Includes\Chat_Generation_Bridge;
+use WPAISiteGenerator\Includes\Generation_Context;
 
 /**
  * Generation Endpoint class.
@@ -59,6 +63,33 @@ class Generation_Endpoint extends WP_REST_Controller {
 	private $provider_manager;
 
 	/**
+	 * Generation orchestrator.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      Generation_Orchestrator    $orchestrator    Generation orchestrator instance.
+	 */
+	private $orchestrator;
+
+	/**
+	 * Generation job manager.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      Generation_Job    $job_manager    Job manager instance.
+	 */
+	private $job_manager;
+
+	/**
+	 * Chat generation bridge.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      Chat_Generation_Bridge    $chat_bridge    Chat bridge instance.
+	 */
+	private $chat_bridge;
+
+	/**
 	 * Initialize the controller.
 	 *
 	 * @since    1.0.0
@@ -67,6 +98,9 @@ class Generation_Endpoint extends WP_REST_Controller {
 		$this->namespace = 'waisg/v1';
 		$this->db_handler = new DB_Handler();
 		$this->provider_manager = new Provider_Manager();
+		$this->orchestrator = new Generation_Orchestrator();
+		$this->job_manager = new Generation_Job();
+		$this->chat_bridge = new Chat_Generation_Bridge();
 	}
 
 	/**
@@ -164,6 +198,122 @@ class Generation_Endpoint extends WP_REST_Controller {
 				),
 			)
 		);
+
+		// Get job status with progress
+		register_rest_route(
+			$this->namespace,
+			'/generate/job/(?P<id>[\d]+)',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_job_status' ),
+					'permission_callback' => array( $this, 'status_permissions_check' ),
+					'args'                => array(
+						'id' => array(
+							'required'          => true,
+							'validate_callback' => function( $param ) {
+								return is_numeric( $param );
+							},
+							'sanitize_callback' => 'absint',
+						),
+					),
+				),
+			)
+		);
+
+		// Pause generation job
+		register_rest_route(
+			$this->namespace,
+			'/generate/job/(?P<id>[\d]+)/pause',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'pause_job' ),
+					'permission_callback' => array( $this, 'job_control_permissions_check' ),
+					'args'                => array(
+						'id' => array(
+							'required'          => true,
+							'validate_callback' => function( $param ) {
+								return is_numeric( $param );
+							},
+							'sanitize_callback' => 'absint',
+						),
+					),
+				),
+			)
+		);
+
+		// Resume generation job
+		register_rest_route(
+			$this->namespace,
+			'/generate/job/(?P<id>[\d]+)/resume',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'resume_job' ),
+					'permission_callback' => array( $this, 'job_control_permissions_check' ),
+					'args'                => array(
+						'id' => array(
+							'required'          => true,
+							'validate_callback' => function( $param ) {
+								return is_numeric( $param );
+							},
+							'sanitize_callback' => 'absint',
+						),
+					),
+				),
+			)
+		);
+
+		// Cancel generation job
+		register_rest_route(
+			$this->namespace,
+			'/generate/job/(?P<id>[\d]+)/cancel',
+			array(
+				array(
+					'methods'             => WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'cancel_job' ),
+					'permission_callback' => array( $this, 'job_control_permissions_check' ),
+					'args'                => array(
+						'id' => array(
+							'required'          => true,
+							'validate_callback' => function( $param ) {
+								return is_numeric( $param );
+							},
+							'sanitize_callback' => 'absint',
+						),
+					),
+				),
+			)
+		);
+
+		// Generate from chat message
+		register_rest_route(
+			$this->namespace,
+			'/generate/from-chat',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'generate_from_chat' ),
+					'permission_callback' => array( $this, 'generate_permissions_check' ),
+					'args'                => $this->get_chat_generation_args(),
+				),
+			)
+		);
+
+		// Get generation history
+		register_rest_route(
+			$this->namespace,
+			'/generate/history',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_generation_history' ),
+					'permission_callback' => array( $this, 'status_permissions_check' ),
+					'args'                => $this->get_collection_params(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -211,55 +361,50 @@ class Generation_Endpoint extends WP_REST_Controller {
 				);
 			}
 
-			// Create generation record
-			$generation_data = array(
-				'user_id'       => get_current_user_id(),
-				'type'          => 'site',
-				'prompt'        => sanitize_textarea_field( $prompt ),
-				'provider'      => sanitize_text_field( $provider ),
-				'status'        => 'pending',
-				'metadata'      => wp_json_encode( array(
-					'business_type' => $business_type,
-					'template'      => $template,
-					'pages'         => $pages,
-					'style'         => $style,
-					'features'      => $features,
-				) ),
+			// Prepare generation configuration
+			$config = array(
+				'type'          => 'site_generation',
+				'business_name' => $request->get_param( 'business_name' ),
+				'business_type' => $business_type,
+				'industry'      => $request->get_param( 'industry' ),
+				'prompt'        => $prompt,
+				'template'      => $template,
+				'pages'         => $pages,
+				'style'         => $style,
+				'features'      => $features,
+				'theme_config'  => array(
+					'colors' => $request->get_param( 'colors' ),
+					'fonts'  => $request->get_param( 'fonts' ),
+					'style'  => $style,
+				),
+				'seo_keywords'  => $request->get_param( 'keywords' ),
+				'immediate'     => $request->get_param( 'immediate' ) ?? false,
 			);
 
-			$generation_id = $this->db_handler->create_generation( $generation_data );
+			// Create job through job manager
+			$job_id = $this->job_manager->create_job( $config );
 
-			if ( ! $generation_id ) {
-				return new WP_Error(
-					'creation_failed',
-					__( 'Failed to create generation record', 'wp-ai-site-generator' ),
-					array( 'status' => 500 )
+			if ( is_wp_error( $job_id ) ) {
+				return $job_id;
+			}
+
+			// If immediate processing requested, trigger orchestrator directly
+			if ( $config['immediate'] ) {
+				// Process in background but return immediately
+				wp_schedule_single_event(
+					time(),
+					'waisg_process_immediate_job',
+					array( $job_id )
 				);
 			}
 
-			// Schedule background generation
-			wp_schedule_single_event(
-				time(),
-				'waisg_process_site_generation',
-				array( $generation_id, $generation_data )
-			);
-
-			// Update transient for real-time status
-			set_transient(
-				'waisg_generation_' . $generation_id,
-				array(
-					'status'  => 'queued',
-					'message' => __( 'Site generation has been queued', 'wp-ai-site-generator' ),
-				),
-				HOUR_IN_SECONDS
-			);
-
 			return new WP_REST_Response(
 				array(
-					'generation_id' => $generation_id,
-					'status'        => 'queued',
-					'message'       => __( 'Site generation started successfully', 'wp-ai-site-generator' ),
+					'job_id'         => $job_id,
+					'status'         => 'queued',
+					'message'        => __( 'Site generation started successfully', 'wp-ai-site-generator' ),
 					'estimated_time' => $this->estimate_generation_time( 'site', count( $pages ) ),
+					'status_url'     => rest_url( $this->namespace . '/generate/job/' . $job_id ),
 				),
 				201
 			);
@@ -1191,5 +1336,218 @@ class Generation_Endpoint extends WP_REST_Controller {
 	 */
 	public function apply_permissions_check() {
 		return is_user_logged_in() && current_user_can( 'edit_posts' );
+	}
+
+	/**
+	 * Check if current user can control jobs.
+	 *
+	 * @since    1.0.0
+	 * @return   bool
+	 */
+	public function job_control_permissions_check() {
+		return is_user_logged_in() && current_user_can( 'edit_posts' );
+	}
+
+	/**
+	 * Get job status.
+	 *
+	 * @since    1.0.0
+	 * @param    WP_REST_Request    $request    The request object.
+	 * @return   WP_REST_Response|WP_Error
+	 */
+	public function get_job_status( $request ) {
+		$job_id = $request->get_param( 'id' );
+		$status = $this->job_manager->get_job_status( $job_id );
+
+		if ( is_wp_error( $status ) ) {
+			return $status;
+		}
+
+		// Add orchestrator status if job is processing
+		if ( $status['status'] === 'processing' ) {
+			$status['orchestrator_status'] = $this->orchestrator->get_status();
+		}
+
+		return new WP_REST_Response( $status );
+	}
+
+	/**
+	 * Pause generation job.
+	 *
+	 * @since    1.0.0
+	 * @param    WP_REST_Request    $request    The request object.
+	 * @return   WP_REST_Response|WP_Error
+	 */
+	public function pause_job( $request ) {
+		$job_id = $request->get_param( 'id' );
+		$result = $this->job_manager->pause_job( $job_id );
+
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		return new WP_REST_Response( array(
+			'success' => true,
+			'message' => __( 'Job paused successfully', 'wp-ai-site-generator' ),
+		) );
+	}
+
+	/**
+	 * Resume generation job.
+	 *
+	 * @since    1.0.0
+	 * @param    WP_REST_Request    $request    The request object.
+	 * @return   WP_REST_Response|WP_Error
+	 */
+	public function resume_job( $request ) {
+		$job_id = $request->get_param( 'id' );
+		$result = $this->job_manager->resume_job( $job_id );
+
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		return new WP_REST_Response( array(
+			'success' => true,
+			'message' => __( 'Job resumed successfully', 'wp-ai-site-generator' ),
+		) );
+	}
+
+	/**
+	 * Cancel generation job.
+	 *
+	 * @since    1.0.0
+	 * @param    WP_REST_Request    $request    The request object.
+	 * @return   WP_REST_Response|WP_Error
+	 */
+	public function cancel_job( $request ) {
+		$job_id = $request->get_param( 'id' );
+		$result = $this->job_manager->cancel_job( $job_id );
+
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		return new WP_REST_Response( array(
+			'success' => true,
+			'message' => __( 'Job cancelled successfully', 'wp-ai-site-generator' ),
+		) );
+	}
+
+	/**
+	 * Generate from chat message.
+	 *
+	 * @since    1.0.0
+	 * @param    WP_REST_Request    $request    The request object.
+	 * @return   WP_REST_Response|WP_Error
+	 */
+	public function generate_from_chat( $request ) {
+		try {
+			$message_data = array(
+				'message'    => $request->get_param( 'message' ),
+				'session_id' => $request->get_param( 'session_id' ),
+				'context'    => $request->get_param( 'context' ) ?? array(),
+			);
+
+			// Process through chat bridge
+			$result = $this->chat_bridge->process_message( $message_data );
+
+			if ( ! $result['requires_generation'] ) {
+				return new WP_REST_Response( array(
+					'requires_generation' => false,
+					'message' => __( 'No generation action detected in message', 'wp-ai-site-generator' ),
+				) );
+			}
+
+			if ( isset( $result['error'] ) ) {
+				return new WP_Error(
+					'generation_error',
+					$result['error'],
+					array( 'status' => 400 )
+				);
+			}
+
+			return new WP_REST_Response( array(
+				'success'  => true,
+				'intent'   => $result['intent'],
+				'job_id'   => $result['result']['job_id'] ?? null,
+				'response' => $result['response'],
+				'result'   => $result['result'],
+			), 201 );
+
+		} catch ( \Exception $e ) {
+			return new WP_Error(
+				'chat_generation_failed',
+				$e->getMessage(),
+				array( 'status' => 500 )
+			);
+		}
+	}
+
+	/**
+	 * Get generation history.
+	 *
+	 * @since    1.0.0
+	 * @param    WP_REST_Request    $request    The request object.
+	 * @return   WP_REST_Response|WP_Error
+	 */
+	public function get_generation_history( $request ) {
+		$args = array(
+			'user_id' => get_current_user_id(),
+			'limit'   => $request->get_param( 'per_page' ) ?? 20,
+			'offset'  => ( ( $request->get_param( 'page' ) ?? 1 ) - 1 ) * ( $request->get_param( 'per_page' ) ?? 20 ),
+			'orderby' => $request->get_param( 'orderby' ) ?? 'created_at',
+			'order'   => $request->get_param( 'order' ) ?? 'DESC',
+		);
+
+		// Add filters
+		if ( $request->get_param( 'status' ) ) {
+			$args['status'] = $request->get_param( 'status' );
+		}
+
+		if ( $request->get_param( 'type' ) ) {
+			$args['type'] = $request->get_param( 'type' );
+		}
+
+		$history = $this->job_manager->get_job_history( $args );
+
+		// Format history items
+		$formatted = array_map( function( $job ) {
+			return array(
+				'id'           => $job->id,
+				'type'         => $job->type,
+				'status'       => $job->status,
+				'progress'     => $job->progress ?? 0,
+				'created_at'   => $job->created_at,
+				'completed_at' => $job->completed_at,
+				'result'       => $job->result ? json_decode( $job->result, true ) : null,
+			);
+		}, $history );
+
+		return new WP_REST_Response( $formatted );
+	}
+
+	/**
+	 * Get chat generation arguments.
+	 *
+	 * @since    1.0.0
+	 * @return   array
+	 */
+	private function get_chat_generation_args() {
+		return array(
+			'message' => array(
+				'required'          => true,
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_textarea_field',
+			),
+			'session_id' => array(
+				'type'              => 'integer',
+				'sanitize_callback' => 'absint',
+			),
+			'context' => array(
+				'type'    => 'object',
+				'default' => array(),
+			),
+		);
 	}
 }

@@ -1,0 +1,181 @@
+/**
+ * Hero Block Frontend Styles
+ *
+ * @package WPAISiteGenerator
+ */
+
+.waisg-hero {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	overflow: hidden;
+	width: 100%;
+
+	&__overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: #000;
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	&__content {
+		position: relative;
+		z-index: 2;
+		width: 100%;
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 60px 20px;
+		text-align: center;
+
+		@media (min-width: 768px) {
+			padding: 80px 40px;
+		}
+
+		@media (min-width: 1024px) {
+			padding: 100px 60px;
+		}
+	}
+
+	&__text-wrapper {
+		margin-bottom: 40px;
+	}
+
+	&__subtitle {
+		margin: 0 0 16px;
+		font-size: 1.125rem;
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		opacity: 0.9;
+
+		@media (min-width: 768px) {
+			font-size: 1.25rem;
+		}
+	}
+
+	&__title {
+		margin: 0 0 24px;
+		font-size: 2.5rem;
+		font-weight: 700;
+		line-height: 1.2;
+
+		@media (min-width: 768px) {
+			font-size: 3.5rem;
+		}
+
+		@media (min-width: 1024px) {
+			font-size: 4rem;
+		}
+	}
+
+	&__description {
+		margin: 0 auto;
+		max-width: 800px;
+		font-size: 1.125rem;
+		line-height: 1.7;
+		opacity: 0.95;
+
+		@media (min-width: 768px) {
+			font-size: 1.25rem;
+		}
+	}
+
+	&__buttons {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 16px;
+		justify-content: center;
+
+		.wp-block-button {
+			margin: 0;
+
+			&__link {
+				display: inline-block;
+				padding: 14px 32px;
+				font-size: 1rem;
+				font-weight: 600;
+				text-decoration: none;
+				border-radius: 4px;
+				transition: all 0.3s ease;
+
+				&:hover {
+					transform: translateY(-2px);
+					box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+				}
+			}
+
+			&.is-style-outline .wp-block-button__link {
+				background-color: transparent;
+				border: 2px solid currentColor;
+
+				&:hover {
+					background-color: currentColor;
+					color: #fff;
+				}
+			}
+		}
+	}
+
+	// Alignment variations
+	&.align-left {
+		.waisg-hero__content {
+			text-align: left;
+		}
+
+		.waisg-hero__buttons {
+			justify-content: flex-start;
+		}
+	}
+
+	&.align-right {
+		.waisg-hero__content {
+			text-align: right;
+		}
+
+		.waisg-hero__buttons {
+			justify-content: flex-end;
+		}
+	}
+
+	// Full width support
+	&.alignfull {
+		width: 100vw;
+		max-width: 100vw;
+		margin-left: calc(50% - 50vw);
+		margin-right: calc(50% - 50vw);
+	}
+
+	// Wide alignment support
+	&.alignwide {
+		max-width: var(--wp--style--global--wide-size, 1200px);
+		margin-left: auto;
+		margin-right: auto;
+	}
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+	.waisg-hero {
+		&__overlay {
+			background-color: #000;
+			opacity: 0.7;
+		}
+	}
+}
+
+// Accessibility
+@media (prefers-reduced-motion: reduce) {
+	.waisg-hero {
+		&__buttons .wp-block-button__link:hover {
+			transform: none;
+		}
+	}
+}

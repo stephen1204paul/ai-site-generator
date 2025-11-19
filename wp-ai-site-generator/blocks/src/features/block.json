@@ -1,0 +1,85 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "waisg/features",
+	"version": "1.0.0",
+	"title": "AI Features Grid",
+	"category": "waisg-blocks",
+	"icon": "grid-view",
+	"description": "AI-generated features grid with icons and descriptions",
+	"supports": {
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"blockGap": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"align": [ "wide", "full" ]
+	},
+	"attributes": {
+		"features": {
+			"type": "array",
+			"default": [
+				{
+					"id": "1",
+					"icon": "dashicons-admin-site",
+					"title": "Feature One",
+					"description": "Description of the first feature"
+				},
+				{
+					"id": "2",
+					"icon": "dashicons-chart-bar",
+					"title": "Feature Two",
+					"description": "Description of the second feature"
+				},
+				{
+					"id": "3",
+					"icon": "dashicons-shield",
+					"title": "Feature Three",
+					"description": "Description of the third feature"
+				}
+			]
+		},
+		"columns": {
+			"type": "number",
+			"default": 3
+		},
+		"iconSize": {
+			"type": "number",
+			"default": 48
+		},
+		"iconColor": {
+			"type": "string",
+			"default": "#007cba"
+		},
+		"showIcons": {
+			"type": "boolean",
+			"default": true
+		},
+		"cardStyle": {
+			"type": "string",
+			"default": "default"
+		},
+		"aiPrompt": {
+			"type": "string",
+			"default": ""
+		},
+		"aiGenerated": {
+			"type": "boolean",
+			"default": false
+		}
+	},
+	"textdomain": "wp-ai-site-generator",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./editor.css",
+	"style": "file:./style.css"
+}

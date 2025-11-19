@@ -80,6 +80,7 @@ class REST_Controller extends WP_REST_Controller {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'api/class-generation-endpoint.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'api/class-provider-endpoint.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'api/class-template-endpoint.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'api/class-quality-endpoint.php';
 
 		// Instantiate and register each endpoint handler
 		$chat_endpoint = new Chat_Endpoint();
@@ -93,6 +94,9 @@ class REST_Controller extends WP_REST_Controller {
 
 		$template_endpoint = new Template_Endpoint();
 		$template_endpoint->register_routes();
+
+		$quality_endpoint = new Quality_Endpoint();
+		$quality_endpoint->register_routes();
 	}
 
 	/**

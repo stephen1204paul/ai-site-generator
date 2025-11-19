@@ -1,0 +1,97 @@
+/**
+ * Features Block Frontend Styles
+ */
+
+.waisg-features {
+	padding: 60px 20px;
+
+	&__grid {
+		display: grid;
+		gap: 30px;
+		margin: 0 auto;
+		max-width: 1200px;
+
+		&--columns-2 {
+			grid-template-columns: repeat(2, 1fr);
+
+			@media (max-width: 768px) {
+				grid-template-columns: 1fr;
+			}
+		}
+
+		&--columns-3 {
+			grid-template-columns: repeat(3, 1fr);
+
+			@media (max-width: 992px) {
+				grid-template-columns: repeat(2, 1fr);
+			}
+
+			@media (max-width: 576px) {
+				grid-template-columns: 1fr;
+			}
+		}
+
+		&--columns-4 {
+			grid-template-columns: repeat(4, 1fr);
+
+			@media (max-width: 1200px) {
+				grid-template-columns: repeat(2, 1fr);
+			}
+
+			@media (max-width: 576px) {
+				grid-template-columns: 1fr;
+			}
+		}
+	}
+
+	&__item {
+		text-align: center;
+		padding: 30px;
+		background: #fff;
+		border-radius: 8px;
+		transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+		&:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+		}
+
+		&--bordered {
+			border: 1px solid #e0e0e0;
+		}
+
+		&--shadowed {
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+		}
+	}
+
+	&__icon {
+		margin-bottom: 20px;
+		color: var(--wp--preset--color--primary, #007cba);
+
+		.dashicons {
+			font-size: 48px;
+			width: 48px;
+			height: 48px;
+		}
+
+		img {
+			max-width: 64px;
+			height: auto;
+		}
+	}
+
+	&__title {
+		margin: 0 0 15px;
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: var(--wp--preset--color--heading, #1e1e1e);
+	}
+
+	&__description {
+		margin: 0;
+		font-size: 1rem;
+		line-height: 1.6;
+		color: var(--wp--preset--color--body, #666);
+	}
+}

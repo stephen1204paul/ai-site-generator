@@ -71,6 +71,17 @@ class Admin {
 			'all'
 		);
 
+		// Enqueue quality dashboard styles on quality page
+		if ( $this->is_page( 'quality' ) ) {
+			wp_enqueue_style(
+				$this->plugin_name . '-quality-dashboard',
+				plugin_dir_url( __FILE__ ) . 'css/quality-dashboard.css',
+				array(),
+				$this->version,
+				'all'
+			);
+		}
+
 		// Enqueue select2 for better select boxes
 		wp_enqueue_style(
 			$this->plugin_name . '-select2',
@@ -169,6 +180,26 @@ class Admin {
 			true
 		);
 
+		// Quality dashboard component
+		if ( $this->is_page( 'quality' ) ) {
+			// Load Chart.js for quality dashboard
+			wp_enqueue_script(
+				$this->plugin_name . '-chartjs',
+				'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
+				array(),
+				'4.4.0',
+				true
+			);
+
+			wp_enqueue_script(
+				$this->plugin_name . '-quality-dashboard',
+				plugin_dir_url( __FILE__ ) . 'js/quality-dashboard.jsx',
+				array( 'wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n', 'wp-date', $this->plugin_name . '-chartjs' ),
+				$this->version,
+				true
+			);
+		}
+
 		// Localize script with necessary data
 		wp_localize_script(
 			$this->plugin_name,
@@ -195,7 +226,7 @@ class Admin {
 		);
 
 		// Also localize for React components
-		$components = array( 'chat-interface', 'provider-config', 'generation-wizard', 'section-regenerator' );
+		$components = array( 'chat-interface', 'provider-config', 'generation-wizard', 'section-regenerator', 'quality-dashboard' );
 		foreach ( $components as $component ) {
 			if ( wp_script_is( $this->plugin_name . '-' . $component, 'enqueued' ) ) {
 				wp_localize_script(
@@ -386,6 +417,16 @@ class Admin {
 			array( $this, 'display_usage_page' )
 		);
 
+		// Quality Dashboard submenu
+		add_submenu_page(
+			$this->plugin_name,
+			__( 'Quality Dashboard', 'wp-ai-site-generator' ),
+			__( 'Quality', 'wp-ai-site-generator' ),
+			'manage_options',
+			$this->plugin_name . '-quality',
+			array( $this, 'display_quality_dashboard_page' )
+		);
+
 		// Help submenu
 		add_submenu_page(
 			$this->plugin_name,
@@ -481,6 +522,15 @@ class Admin {
 	 */
 	public function display_usage_page() {
 		include_once 'partials/admin-usage-display.php';
+	}
+
+	/**
+	 * Display quality dashboard page.
+	 *
+	 * @since    1.0.0
+	 */
+	public function display_quality_dashboard_page() {
+		include_once 'partials/quality-dashboard.php';
 	}
 
 	/**
